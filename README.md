@@ -11,5 +11,8 @@ In terms of networking, mastermind.py will act as the server, while mastermind_u
 References we used:
 
 http://www.tutorialspoint.com/python/python_networking.htm
+
 https://docs.python.org/2/library/random.html
+
 http://www.pythonforbeginners.com/basics/list-comprehensions-in-python
+
