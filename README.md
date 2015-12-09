@@ -8,6 +8,8 @@ This game is exactly like the Mastermind game we made for Project 2. The differe
 
 In terms of networking, mastermind.py will act as the server, while mastermind_user.py is the client. The client will connect to the server with a known IP address and port number ahead of time. 
 
+But for testing purposes, we set it so that whoever is testing this will be able to run it locally on 2 separate terminal windows. 
+
 References we used:
 
 http://www.tutorialspoint.com/python/python_networking.htm
