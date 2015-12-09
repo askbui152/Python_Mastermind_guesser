@@ -3,101 +3,114 @@ import random
 import string
 
 def random_gen(repeat):
-    symbol = ['!', '@', '#', '$', '%', '^']
-    if repeat:
-        # generate list of 4 repeating random symbols
-        answer = [symbol[random.randint(0,4)] for i in range(4)]
-    else:
-        # 4 non repeating random symbols
-        answer = (random.sample(symbol,4))
-    return answer
+	symbol = ['!', '@', '#', '$', '%', '^']
+	if repeat:
+		answer = [symbol[random.randint(0,4)] for i in range(4)]
+	else:
+		answer = (random.sample(symbol,4))
+	return answer
 
 def check_symbol(guess):
-    valid = True
-    for x in range(4):
-        if guess[x] not in '!@#$%^':
-            valid = False
-    return valid
+	valid = True
+	for x in range(4):
+		if guess[x] not in '!@#$%^':
+			value = False
+	return valid
 
-def checker():
-    # this checker can also check for repeating random symbols
+def toXandO(table):
+	for i in range(4):
+		if table[i] == 0:
+			table[i] = ' '
+		elif table[i] == 1:
+			table[i] = 'O'
+		elif table[i] == 2:
+			table[i] = 'X'
+	return table
 
-    # variables to keep track of corrects and wrongs
-    countx = 0
-    counto = 0
-    # empty string to keep track of repeating symbols
-    a = ""
+def bubblesort(table):
+	length = len(table) - 1
+	sort = False
+	temp = 0
+	while not sort:
+		sort = True
+		for i in range(length):
+			if table[i] < table[i+1]:
+				temp = table[i]
+				table[i] = table[i+1]
+				table[i+1] = temp
+				sort = False
+	return table
+def checker(guess, answer):
+	countx = 0
+	counto = 0
 
-    # loop through each index
-    for x in range(4):
-        # if the index at guess equals to the index at answer
-        if guess[x] == answer[x]:
-            # increment count for number of X
-            countx += 1
-            # replace match with 'n' in copy to keep track
-            copy[x] = n
-        else:
-            # at the x position in guess, search through answer for O's
-            for i in range(4):
-                # if a symbol match at different locations
-                if guess[x] == copy[i]:
-                    # if symbol is already found or if symbol is an exact match at future index
-                    if copy[i] == a or copy[i] == guess[i]:
-                        pass
-                    else:
-                        # when found, save to empty string
-                        a = guess[x]
-                        counto += 1
-                        copy[i] = m
-
-def main():
+	a = ''
+	copy = list(answer)
+	for x in range(4):
+		if guess[x] == answer[x]:
+			countx += 1
+			copy[x] = 'n'
+		else:
+			for i in range(4):
+				if guess[x] == copy[i]:
+					if copy[i] == a or copy[i] == guess[i]:
+						pass
+					else:
+						a = guess[x]
+						counto += 1
+						copy[i] = 'm'
+	newcopy = [0,0,0,0]
+	for i in range(4):
+		if copy[i] == 'n':
+			newcopy[i] = 2
+		elif copy[i] == 'm':
+			newcopy[i] = 1
+		else:
+			newcopy[i] = 0
+	return newcopy
+def use_sockets():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	host = socket.gethostname()
-	port = 9000
-	s.bind((host, port))
-
+	port = 9004				#this is arbitrary
+	s.bind((host,port))
 	s.listen(10)
+	return s
+
+def main():
+	new_socket = use_sockets() #made changes here
+	repeat = False
+	code = random_gen(repeat)
+	print code
 	count = 0
 	win = False
-	while True:
-		conn, addr = s.accept()
-		print 'Connecting with ', addr
-		if (count < 10) or (win = True):
-			break
-        else:
-            guess = conn.recv(1024)
-            if not guess:
-                pass
-            else:
-                # need to get repeat Y/N from user
-                answer = random_gen(repeat)
-                copy = answer
+	conn, addr = new_socket.accept()
+	while (count < 10):
+		#guess = raw_input("Pleaase enter your guess: ")
+		#conn, addr = new_socket.accept()
+		guess = conn.recv(1024)
+		#check here
+		print guess
+		check = check_symbol(guess)
+		if check == True:
+			checker_table = checker(guess, code)
+			newChecker_table = bubblesort(checker_table)
+			printChecker_table = toXandO(newChecker_table)
+			#print printChecker_table
+			if printChecker_table == ['X','X','X','X']:
+				conn.send('Yay you win!')
+				break
+			else:
+				conn.send(''.join(printChecker_table))
+		else:
+			conn.send('Incorrect input')
 
-                # if the length of guesses equal 4
-                if len(guess)== 4:
-                    # if input is valid
-                    if check_symbol(guess):
-                        # keep track of amount of tries
-                        count += 1
-                        # call checker
-                        checker(copy)
-
-                        # print table somewhere here
-                        # if there are 4 X's
-                        if countx == 4:
-                            win = True
-                        else:
-                            print "You have attempted %d/10 tries." % count
-                    else:
-                        print "One or more symbols is invalid."
-
-                else:
-                    print "You have entered the wrong number of values."
-
-
-
-		conn.close()
-
+		#if printChecker_table == ['X','X','X','X']:
+		#	conn.send('Yay you win!')
+		#	break
+		count += 1
+	conn.close()
+	if count == 10:
+		conn.send('Sorry you lose!')
 
 if __name__ == '__main__':
 	main()
