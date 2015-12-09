@@ -1,27 +1,23 @@
 import socket
 import sys
-import argparse
 
-def send_guess(TCP_IP, TCP_PORT, guess):
+def main():
+	TCP_IP = ''
+	TCP_PORT = 9000
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.connect((TCP_IP, TCP_PORT))
 	count = 0
 	win = False
 	while (count < 0) or (win == False):
-		parser = argparse.ArgumentParser()
-
-
-
-def main():
-	#this is main
-	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	s.connect((TCP_IP, TCP_PORT))
-	s.send(guess)
-
-	parser = argparse.ArgumentParser()
-	parser.add_argument('-c', action='store', dest='code', help='My Guess')
-	results = parser.parse_args()
-	guess = results.code
-
-
+		guess = raw_input("Please enter your guess:")
+		#print "You entered: "
+		data_recv = s.recv(1024)
+		print data_recv
+		if data_recv == guess:
+			win = True
+		count += 1
+	if count == 10:
+		print "Sorry you lose!"
 
 if __name__ == '__main__':
 	main()
