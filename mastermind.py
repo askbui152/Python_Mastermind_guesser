@@ -92,8 +92,8 @@ def main():
 	tries = 10
 
 	# create matrix to display results
-    matrix = [[]]
-    matrix = [[0 for i in xrange(9)] for i in xrange(tries)]
+	matrix = [[]]
+	matrix = [[0 for i in xrange(9)] for i in xrange(tries)]
     for x in range(tries):
         matrix[x][0] = x + 1
 
