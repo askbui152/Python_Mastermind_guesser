@@ -2,6 +2,11 @@ import socket
 import random
 import string
 
+def print_results(combine, matrix, row):
+    for x in range(8):
+        matrix[row][x+1] = combine[x]
+    return matrix
+
 def random_gen(repeat):
 	symbol = ['!', '@', '#', '$', '%', '^']
 	if repeat:
@@ -83,6 +88,21 @@ def main():
 	print code
 	count = 0
 	win = False
+
+	tries = 10
+
+	# create matrix to display results
+    matrix = [[]]
+    matrix = [[0 for i in xrange(9)] for i in xrange(tries)]
+    for x in range(tries):
+        matrix[x][0] = x + 1
+
+    for i in range(tries):
+            for o in range(1,9):
+                    matrix[i][o] = ""
+
+    row = 0
+
 	conn, addr = new_socket.accept()
 	while (count < 10):
 		#guess = raw_input("Pleaase enter your guess: ")
@@ -95,6 +115,14 @@ def main():
 			checker_table = checker(guess, code)
 			newChecker_table = bubblesort(checker_table)
 			printChecker_table = toXandO(newChecker_table)
+
+			# combine guesses and clues in one list
+			combined = guesslist + printChecker_table
+            print_results(combined, matrix, row)
+            print tabulate(matrix, headers=["G","u","e","s", "s", "C", "l", "u", "e"],tablefmt="simple")
+
+            row += 1
+
 			#print printChecker_table
 			if printChecker_table == ['X','X','X','X']:
 				conn.send('Yay you win!')
@@ -104,9 +132,7 @@ def main():
 		else:
 			conn.send('Incorrect input')
 
-		#if printChecker_table == ['X','X','X','X']:
-		#	conn.send('Yay you win!')
-		#	break
+
 		count += 1
 	conn.close()
 	if count == 10:
