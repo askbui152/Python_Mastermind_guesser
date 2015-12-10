@@ -10,7 +10,8 @@ This game is exactly like the Mastermind game we made for Project 2. The differe
 
 In terms of networking, mastermind.py will act as the server, while mastermind_user.py is the client. The client will connect to the server with a known IP address and port number ahead of time. 
 
-But for testing purposes, we set it so that whoever is testing this will be able to run it locally on 2 separate terminal windows. 
+But for testing purposes, we set it so that whoever is testing this will be able to run it locally on 2 separate terminal windows. You also need to import the library tabulate
+	pip install tabulate 
 
 References we used:
 
@@ -20,5 +21,8 @@ https://docs.python.org/2/library/random.html
 
 http://www.pythonforbeginners.com/basics/list-comprehensions-in-python
 
+http://stackoverflow.com/questions/24423162/how-to-send-an-array-over-a-socket-in-python
+
 https://pypi.python.org/pypi/tabulate
+
 

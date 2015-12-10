@@ -1,6 +1,15 @@
+#!/usr/bin/python
+
+# Authors: James Bui and Quyen Mac
+# Modified: December 9, 2015
+# Project Name: Mastermind in Python
+# File Name: mastermind.py [computer/server]
+
 import socket
 import random
 import string
+import pickle
+from tabulate import tabulate
 
 def print_results(combine, matrix, row):
     for x in range(8):
@@ -76,7 +85,7 @@ def checker(guess, answer):
 def use_sockets():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	host = socket.gethostname()
-	port = 9004				#this is arbitrary
+	port = 9009			#this is arbitrary
 	s.bind((host,port))
 	s.listen(10)
 	return s
@@ -94,20 +103,21 @@ def main():
 	# create matrix to display results
 	matrix = [[]]
 	matrix = [[0 for i in xrange(9)] for i in xrange(tries)]
-    for x in range(tries):
-        matrix[x][0] = x + 1
+	for x in range(tries):
+		matrix[x][0] = x + 1
 
-    for i in range(tries):
-            for o in range(1,9):
-                    matrix[i][o] = ""
+	for i in range(tries):
+		for o in range(1,9):
+			matrix[i][o] = ""
 
-    row = 0
+	row = 0
 
 	conn, addr = new_socket.accept()
 	while (count < 10):
 		#guess = raw_input("Pleaase enter your guess: ")
 		#conn, addr = new_socket.accept()
 		guess = conn.recv(1024)
+		guesslist = list(guess)
 		#check here
 		print guess
 		check = check_symbol(guess)
@@ -118,25 +128,24 @@ def main():
 
 			# combine guesses and clues in one list
 			combined = guesslist + printChecker_table
-            print_results(combined, matrix, row)
-            print tabulate(matrix, headers=["G","u","e","s", "s", "C", "l", "u", "e"],tablefmt="simple")
+			print_results(combined, matrix, row)
+			print tabulate(matrix, headers=["G","u","e","s", "s", "C", "l", "u", "e"],tablefmt="simple")
 
-            row += 1
+			row += 1
 
-			#print printChecker_table
 			if printChecker_table == ['X','X','X','X']:
 				conn.send('Yay you win!')
 				break
 			else:
-				conn.send(''.join(printChecker_table))
+				send_matrix = pickle.dumps(matrix)	# Serialize the list into a string to send
+				conn.sendall(send_matrix)
 		else:
 			conn.send('Incorrect input')
-
-
-		count += 1
+		count += 1 			# Increment the round
 	conn.close()
 	if count == 10:
-		conn.send('Sorry you lose!')
+		send_answer = pickle.dumps(code)
+		conn.send('Sorry you lose! The answer was ' + send_answer)
 
 if __name__ == '__main__':
 	main()
